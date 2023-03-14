@@ -5,9 +5,12 @@ import com.example.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -32,10 +35,16 @@ public class MemberController {
         (추가 기능 구현 예정 - 승준)
      */
     @PostMapping("/login")
-    public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session){
-       MemberDTO loginResult = memberService.login(memberDTO);
+    public String login(@ModelAttribute @Valid MemberDTO memberDTO, BindingResult bindingResult, HttpServletRequest httpServletRequest){
+        //binding에 에러가 담길경우 index로 보낸다.
+        if (bindingResult.hasErrors()) {
+            return "login";
+        }
+        MemberDTO loginResult = memberService.login(memberDTO);
        if(loginResult != null) {
            // login 성공
+           //세션이 있으면 반환해주고 세션이 없는 경우 새로 만들어서 session에 넣어준다.
+           HttpSession session = httpServletRequest.getSession();
            session.setAttribute("loginEmail", loginResult.getMemberEmail());
            return "main";
        } else{

@@ -25,6 +25,7 @@ public class MemberService {
 
 
         Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberDTO.getMemberEmail());
+        //isPresent() bool함수로 구현
         if (byMemberEmail.isPresent()){
             MemberEntity memberEntity = byMemberEmail.get();
             if (memberEntity.getMemberPassword().equals(memberDTO.getMemberPassword())){
