@@ -10,9 +10,9 @@ import javax.validation.constraints.Size;
 @Data
 public class MemberDTO {
 
-    @NotEmpty(message = "이름은 필수값입니다")
+    @NotEmpty(message = "이름은 필수값입니다.")
     private String memberName; // 이름
-
+    @Size(min = 9, message = "학번을 다시 확인해 주세요.")
     private Long memberId; // 학번
 
     private String memberMajor; // 학과
