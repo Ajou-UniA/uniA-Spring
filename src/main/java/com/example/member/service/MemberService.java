@@ -1,43 +1,57 @@
 package com.example.member.service;
 
+import com.example.member.entity.Role;
 import lombok.RequiredArgsConstructor;
 import com.example.member.dto.MemberDTO;
 import com.example.member.entity.MemberEntity;
 import com.example.member.repository.MemberRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
+    @Transactional
     public void save(MemberDTO memberDTO) {
+        //시큐리티 비교에 암호화된 비밀번호가 필요하여 회원가입시 암호화하여 저장(보안+기능구현을 위함)
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        memberDTO.setMemberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()));
         MemberEntity memberEntity = MemberEntity.toMemberEntity(memberDTO);
         memberRepository.save(memberEntity);
 
     }
 
-    public MemberDTO login(MemberDTO memberDTO) {
-
-
-        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberDTO.getMemberEmail());
-        //isPresent() bool함수로 구현
-        if (byMemberEmail.isPresent()){
-            MemberEntity memberEntity = byMemberEmail.get();
-            if (memberEntity.getMemberPassword().equals(memberDTO.getMemberPassword())){
-                MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
-                return dto;
-            } else{
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
+//    public MemberDTO login(String userEmail,String passWord) {
+//
+//
+//        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(userEmail);
+//        //isPresent() bool함수로 구현
+//        if (byMemberEmail.isPresent()){
+//            MemberEntity memberEntity = byMemberEmail.get();
+//            if (memberEntity.getMemberPassword().equals(passWord)){
+//                MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
+//                return dto;
+//            } else{
+//                return null;
+//            }
+//        } else {
+//            return null;
+//        }
+//    }
 
     public List<MemberDTO> findAll() {
         List<MemberEntity> memberEntityList = memberRepository.findAll();
@@ -91,4 +105,20 @@ public class MemberService {
             memberRepository.deleteById(optionalMemberEntity.get().getMemberId());
         }
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<MemberEntity> findName = memberRepository.findByMemberEmail(username);
+        MemberEntity member = findName.get();
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+//        if(("admin").equals(username)){
+//            authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
+//        }else {
+//            authorities.add(new SimpleGrantedAuthority(Role.USER.getValue()));
+//        }
+
+        return new User(member.getMemberEmail(), member.getMemberPassword() , authorities);
+    }
+
 }
