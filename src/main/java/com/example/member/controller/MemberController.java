@@ -2,6 +2,7 @@ package com.example.member.controller;
 
 import com.example.member.dto.MemberDTO;
 import com.example.member.service.MemberService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Controller
@@ -25,7 +27,9 @@ public class MemberController {
         로그인 페이지 GET 요청
     */
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(Model model) {
+        //해당 모델을 뷰로 넘겨 데이터를 받아온다.
+        model.addAttribute("memberDTO", new MemberDTO());
         return "login";
     }
 
@@ -34,25 +38,29 @@ public class MemberController {
         로그인 성공 후 main 페이지로 이동
         (추가 기능 구현 예정 - 승준)
      */
-    @PostMapping("/login")
-    public String login(@ModelAttribute @Valid MemberDTO memberDTO, BindingResult bindingResult, HttpServletRequest httpServletRequest){
-        //binding에 에러가 담길경우 index로 보낸다.
-        if (bindingResult.hasErrors()) {
-            return "login";
-        }
-        MemberDTO loginResult = memberService.login(memberDTO);
-       if(loginResult != null) {
-           // login 성공
-           //세션이 있으면 반환해주고 세션이 없는 경우 새로 만들어서 session에 넣어준다.
-           HttpSession session = httpServletRequest.getSession();
-           session.setAttribute("loginEmail", loginResult.getMemberEmail());
-           return "main";
-       } else{
-           // login 실패
-           return "login";
-       }
+//    @PostMapping("/login")
+//    public String login(LoginRequest request, BindingResult bindingResult, HttpServletRequest httpServletRequest){
+//        if(bindingResult.hasErrors()){
+//            return "login";//vilad 오류를 잡아준다. 오류페이지가 아닌 해당 페이지에 내가 설정한 오류메세지가 뜬다.ex)이름은 필수입니다.
+//        }
+//        MemberDTO loginResult = memberService.login(request.getEmail(),request.getPassword());
+//       if(loginResult != null) {
+//           // login 성공
+//           //세션이 있으면 반환해주고 세션이 없는 경우 새로 만들어서 session에 넣어준다.
+//           HttpSession session = httpServletRequest.getSession();
+//           session.setAttribute("loginEmail", loginResult.getMemberEmail());
+//           return "main";
+//       } else{
+//           // login 실패(vaild 포함)
+//           return "index";
+//       }
+//    }
+    //단순 메인으로 url연결해주는 매핑
+    @GetMapping("/main")
+    public String mainForm() {
+        //해당 모델을 뷰로 넘겨 데이터를 받아온다.
+        return "main";
     }
-
 
 
     /*
@@ -69,7 +77,12 @@ public class MemberController {
         (추가 기능 구현 예정 - 민석)
      */
     @PostMapping("/save")
-    public String save(@ModelAttribute MemberDTO memberDTO){
+    public String save(@ModelAttribute @Valid MemberDTO memberDTO,BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            System.out.println(bindingResult);
+            return "save";//에러가 뜨면 오류페이지가 아닌 해당 페이지에 내가 설정한 오류메세지가 뜬다.ex)이름은 필수입니다.
+        }
+
         memberService.save(memberDTO);
         return "index";
     }
@@ -148,4 +161,13 @@ public class MemberController {
         session.invalidate();
         return "index";
     }
+
+
+//    @Data
+//    static class LoginRequest{
+//        @NotEmpty
+//        private String email;
+//        @NotEmpty
+//        private String password;
+//    }
 }
