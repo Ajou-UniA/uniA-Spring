@@ -6,9 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,7 +28,20 @@ public class MemberController {
         (추가 기능 구현 예정 - 민석)
      */
     @PostMapping("/save")
-    public ResponseEntity<MemberDTO> save(@ModelAttribute MemberDTO memberDTO){
+    public ResponseEntity save(@Valid @ModelAttribute MemberDTO memberDTO, BindingResult bindingResult){
+
+        if (bindingResult.hasErrors()){
+            StringBuilder sb = new StringBuilder();
+            bindingResult.getAllErrors().forEach(objectError -> {
+                FieldError field = (FieldError) objectError;
+                String message = objectError.getDefaultMessage();
+
+                sb.append("Error field : " + field.getField() + "\n");
+                sb.append("Error message : " + message);
+            });
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sb.toString());
+        }
+
         memberService.save(memberDTO);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(memberDTO);
     }
@@ -33,6 +52,17 @@ public class MemberController {
     @GetMapping("/save/exists/{memberEmail}")
     public ResponseEntity<Boolean> checkEmailDuplicate(@PathVariable String memberEmail){
         return ResponseEntity.ok(memberService.checkEmailDuplicate(memberEmail));
+    }
+
+    /*
+        DB에 저장된 회원 전체 조회
+        실제 기능은 아니고 개발할 때 DB 관리를 위해 만들었습니다
+        회원들의 정보가 데이터베이스에 잘 저장되는지 확인
+     */
+    @GetMapping("/list")
+    public ResponseEntity<List<MemberDTO>> findAll(){
+        List<MemberDTO> memberDTOList = memberService.findAll();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(memberDTOList);
     }
 
     /*

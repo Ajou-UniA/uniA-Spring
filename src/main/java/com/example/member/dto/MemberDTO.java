@@ -4,6 +4,7 @@ import com.example.member.entity.MemberEntity;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -13,14 +14,14 @@ public class MemberDTO {
     @NotBlank(message = "Please enter your name")
     private String memberName; // 이름
 
-    @NotBlank(message = "Please enter your student ID")
+    @NotNull(message = "Please enter your student ID")
     private Long memberId; // 학번
 
     @NotBlank(message = "Please enter your major")
     private String memberMajor; // 학과
 
     @NotBlank(message = "Please enter your email")
-    @Pattern(regexp = "[a-zA-Z0-9._%+-]+@ajou\\\\.ac\\\\.kr$", message = "Email format is incorrect")
+    @Pattern(regexp = "[a-zA-Z0-9._%+-]+@ajou.ac.kr$", message = "Email format is incorrect")
     private String memberEmail; // 이메일
 
     @NotBlank(message = "Please enter password")
