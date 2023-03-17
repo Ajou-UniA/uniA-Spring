@@ -3,6 +3,7 @@ package com.example.member.dto;
 import com.example.member.entity.MemberEntity;
 import lombok.Data;
 
+
 @Data
 public class MemberDTO {
 

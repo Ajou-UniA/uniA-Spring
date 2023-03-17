@@ -56,25 +56,6 @@ public class MemberService {
         }
     }
 
-    public MemberDTO findByMemberEmail(String memberEmail){
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(memberEmail);
-        if (optionalMemberEntity.isPresent()){
-            return MemberDTO.toMemberDTO(optionalMemberEntity.get());
-        } else {
-            return null;
-        }
-    }
-
-    public MemberDTO updateForm(String myEmail){
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(myEmail);
-        if (optionalMemberEntity.isPresent()){
-            return MemberDTO.toMemberDTO(optionalMemberEntity.get());
-        } else{
-            return null;
-        }
-    }
-
-
     public void update(MemberDTO memberDTO) {
         // update라는 메소드가 따로 없기 때문에, save 메소드 사용
         memberRepository.save(MemberEntity.toMemberEntity(memberDTO));
@@ -84,10 +65,7 @@ public class MemberService {
         memberRepository.deleteById(id);
     }
 
-    public void deleteByMemberEmail(String memberEmail){
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(memberEmail);
-        if (optionalMemberEntity.isPresent()){
-            memberRepository.deleteById(optionalMemberEntity.get().getMemberId());
-        }
+    public boolean checkEmailDuplicate(String memberEmail) {
+        return memberRepository.existsByMemberEmail(memberEmail);
     }
 }
