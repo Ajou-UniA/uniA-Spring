@@ -21,23 +21,6 @@ public class MemberService {
 
     }
 
-    public MemberDTO login(MemberDTO memberDTO) {
-
-
-        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberDTO.getMemberEmail());
-        if (byMemberEmail.isPresent()){
-            MemberEntity memberEntity = byMemberEmail.get();
-            if (memberEntity.getMemberPassword().equals(memberDTO.getMemberPassword())){
-                MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
-                return dto;
-            } else{
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
     public List<MemberDTO> findAll() {
         List<MemberEntity> memberEntityList = memberRepository.findAll();
         List<MemberDTO> memberDTOList = new ArrayList<>();
@@ -68,4 +51,23 @@ public class MemberService {
     public boolean checkEmailDuplicate(String memberEmail) {
         return memberRepository.existsByMemberEmail(memberEmail);
     }
+
+    /*
+        public MemberDTO login(MemberDTO memberDTO) {
+
+
+            Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberDTO.getMemberEmail());
+            if (byMemberEmail.isPresent()){
+                MemberEntity memberEntity = byMemberEmail.get();
+                if (memberEntity.getMemberPassword().equals(memberDTO.getMemberPassword())){
+                    MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
+                    return dto;
+                } else{
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+    */
 }

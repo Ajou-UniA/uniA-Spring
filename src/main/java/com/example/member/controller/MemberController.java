@@ -7,14 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,13 +23,12 @@ public class MemberController {
 
     /*
         회원가입 로직 - POST
-        (추가 기능 구현 예정 - 민석)
      */
     @PostMapping("/save")
     public ResponseEntity save(@Valid @ModelAttribute MemberDTO memberDTO, BindingResult bindingResult){
 
         if (bindingResult.hasErrors()){
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(); // String 객체보다 좋음
             bindingResult.getAllErrors().forEach(objectError -> {
                 FieldError field = (FieldError) objectError;
                 String message = objectError.getDefaultMessage();
@@ -49,9 +46,13 @@ public class MemberController {
     /*
         이메일 중복확인
      */
-    @GetMapping("/save/exists/{memberEmail}")
-    public ResponseEntity<Boolean> checkEmailDuplicate(@PathVariable String memberEmail){
-        return ResponseEntity.ok(memberService.checkEmailDuplicate(memberEmail));
+    @GetMapping("/save/{memberEmail}")
+    public ResponseEntity checkEmailDuplicate(@PathVariable String memberEmail){
+
+        if(memberService.checkEmailDuplicate(memberEmail) == true){
+            return new ResponseEntity<>("The email you entered already exists", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Good", HttpStatus.OK);
     }
 
     /*
@@ -75,7 +76,7 @@ public class MemberController {
     }
 
     /*
-        사용자 정보 업데이트, 추후 PatchMapping으로 수정 예정
+        사용자 정보 업데이트
      */
     @PatchMapping("/{memberId}")
     public ResponseEntity update(@PathVariable Long memberId, @ModelAttribute MemberDTO memberDTO){
@@ -84,7 +85,7 @@ public class MemberController {
     }
 
     /*
-        회원 탈퇴 기능 (DeleteMapping으로 수정 해야함)
+        회원 탈퇴 기능
         탈퇴 처리 후 index 페이지로 이동
      */
     @DeleteMapping("/{memberId}")
