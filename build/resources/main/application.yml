@@ -12,6 +12,9 @@ spring:
     password: 1234Abc!
   thymeleaf:
     cache: false
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
   # spring data jpa 설정
   jpa:
