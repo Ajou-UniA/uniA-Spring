@@ -18,7 +18,10 @@ public class MemberService {
     public void save(MemberDTO memberDTO) {
         MemberEntity memberEntity = MemberEntity.toMemberEntity(memberDTO);
         memberRepository.save(memberEntity);
+    }
 
+    public boolean checkEmailDuplicate(String memberEmail) {
+        return memberRepository.existsByMemberEmail(memberEmail);
     }
 
     public List<MemberDTO> findAll() {
@@ -48,9 +51,7 @@ public class MemberService {
         memberRepository.deleteById(id);
     }
 
-    public boolean checkEmailDuplicate(String memberEmail) {
-        return memberRepository.existsByMemberEmail(memberEmail);
-    }
+
 
     /*
         public MemberDTO login(MemberDTO memberDTO) {

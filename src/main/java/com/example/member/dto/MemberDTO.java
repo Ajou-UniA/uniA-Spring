@@ -26,7 +26,7 @@ public class MemberDTO {
     private String memberEmail; // 이메일
 
     @NotBlank(message = "Please enter password")
-    @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
+    @Size(min = 8, max = 12, message = "Password must be between 8 and 12 characters")
     private String memberPassword; // 비밀번호
 
     public static MemberDTO toMemberDTO(MemberEntity memberEntity){

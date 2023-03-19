@@ -3,12 +3,15 @@ package com.example.member.controller;
 import com.example.member.dto.MemberDTO;
 import com.example.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
@@ -56,7 +59,7 @@ public class MemberController {
     public ResponseEntity checkEmailDuplicate(@PathVariable String memberEmail){
 
         if(memberService.checkEmailDuplicate(memberEmail) == true){
-            return new ResponseEntity<>("The email you entered already exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("The email already exists", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Good", HttpStatus.OK);
     }
@@ -116,9 +119,12 @@ public class MemberController {
      * @param
      * @return
      */
-    @GetMapping("/logout")
-    public ResponseEntity logout(HttpSession session){
-        session.invalidate();
-        return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
-    }
+//    @GetMapping("/logout")
+//    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        if (auth != null) {
+//            new SecurityContextLogoutHandler().logout(request, response, auth);
+//        }
+//        return ResponseEntity.ok().build();
+//    }
 }

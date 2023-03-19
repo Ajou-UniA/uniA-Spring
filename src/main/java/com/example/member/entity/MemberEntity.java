@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table(name = "member_table")
 public class MemberEntity {
 
-    @Column
+    @Column(nullable = false)
     private String memberName; // 이름
     @Id
     private Long memberId; // 학번
@@ -21,7 +21,7 @@ public class MemberEntity {
     private String memberMajor; // 학과
     @Column(unique = true)
     private String memberEmail; // 이메일
-    @Column
+    @Column(nullable = false)
     private String memberPassword; // 비밀번호
 
 
