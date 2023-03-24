@@ -1,15 +1,16 @@
 package com.example.member.entity;
 
-
 import com.example.member.dto.MemberDTO;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-
+import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
 @Setter
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member_table")
 public class MemberEntity {
 
@@ -23,8 +24,6 @@ public class MemberEntity {
     private String memberEmail; // 이메일
     @Column(nullable = false)
     private String memberPassword; // 비밀번호
-
-
 
     public static MemberEntity toMemberEntity(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();

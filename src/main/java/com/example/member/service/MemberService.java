@@ -15,7 +15,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    public void save(MemberDTO memberDTO) {
+    public void create(MemberDTO memberDTO) {
         MemberEntity memberEntity = MemberEntity.toMemberEntity(memberDTO);
         memberRepository.save(memberEntity);
     }

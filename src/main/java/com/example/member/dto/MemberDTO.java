@@ -2,7 +2,6 @@ package com.example.member.dto;
 
 import com.example.member.entity.MemberEntity;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
