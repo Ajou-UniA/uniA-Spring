@@ -33,6 +33,14 @@ public class MemberController {
     @PostMapping("/create")
     public ResponseEntity create(@Valid @RequestBody MemberDTO memberDTO, BindingResult bindingResult){
 
+        String memberEmail = memberDTO.getMemberEmail();
+
+        if (memberEmail == null || memberEmail.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        generateCode()
+
         if (bindingResult.hasErrors()){
             String errorMessage = bindingResult.getAllErrors().stream()
                     .map(objectError -> {
