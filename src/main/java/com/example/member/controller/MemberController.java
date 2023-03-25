@@ -33,14 +33,6 @@ public class MemberController {
     @PostMapping("/create")
     public ResponseEntity create(@Valid @RequestBody MemberDTO memberDTO, BindingResult bindingResult){
 
-        String memberEmail = memberDTO.getMemberEmail();
-
-        if (memberEmail == null || memberEmail.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-
-        generateCode()
-
         if (bindingResult.hasErrors()){
             String errorMessage = bindingResult.getAllErrors().stream()
                     .map(objectError -> {
@@ -53,21 +45,24 @@ public class MemberController {
         }
 
         memberService.create(memberDTO);
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(memberDTO);
     }
 
+
     /**
      * 이메일 중복 확인
-     * [GET] /member/checkEmailDuplicate/{memberEmail}
+     * [GET] /member/email-check/{memberEmail}
      * @param memberEmail
      * @return ResponseEntity
      */
-    @GetMapping("/checkEmailDuplicate/{memberEmail}")
+    @GetMapping("/email-check/{memberEmail}")
     public ResponseEntity checkEmailDuplicate(@PathVariable String memberEmail){
 
         if(memberService.checkEmailDuplicate(memberEmail)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The email already exists");
         }
+
         return ResponseEntity.status(HttpStatus.OK).body("The email is available");
     }
 
@@ -122,7 +117,6 @@ public class MemberController {
 
     }
 
-
     /**
      * 회원 탈퇴
      * [DELETE] /member/{memberId}
@@ -135,18 +129,4 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    /**
-     * 로그아웃 (Controller 내 구현 X)
-     * [GET] /member/logout
-     * @param
-     * @return
-     */
-//    @GetMapping("/logout")
-//    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        if (auth != null) {
-//            new SecurityContextLogoutHandler().logout(request, response, auth);
-//        }
-//        return ResponseEntity.ok().build();
-//    }
 }
