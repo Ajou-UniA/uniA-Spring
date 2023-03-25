@@ -11,8 +11,11 @@ import javax.validation.constraints.Size;
 @Data
 public class MemberDTO {
 
-    @NotBlank(message = "Please enter your name")
-    private String memberName; // 이름
+    @NotBlank(message = "Please enter your first name")
+    private String firstName; // 이름
+
+    @NotBlank(message = "Please enter your last name")
+    private String lastName; // 성
 
     @NotNull(message = "Please enter your student ID")
     private Long memberId; // 학번
@@ -28,9 +31,13 @@ public class MemberDTO {
     @Size(min = 8, max = 12, message = "Password must be between 8 and 12 characters")
     private String memberPassword; // 비밀번호
 
+    @NotBlank(message = "Please confirm your password")
+    private String memberConfirmPassword; // 비밀번호 확인
+
     public static MemberDTO toMemberDTO(MemberEntity memberEntity){
         MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setMemberName(memberEntity.getMemberName());
+        memberDTO.setLastName(memberEntity.getLastName());
+        memberDTO.setFirstName(memberEntity.getFirstName());
         memberDTO.setMemberId(memberEntity.getMemberId());
         memberDTO.setMemberMajor(memberEntity.getMemberMajor());
         memberDTO.setMemberEmail(memberEntity.getMemberEmail());

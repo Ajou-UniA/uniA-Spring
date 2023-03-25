@@ -15,19 +15,22 @@ import javax.persistence.*;
 public class MemberEntity {
 
     @Column(nullable = false)
-    private String memberName; // 이름
+    private String firstName; // 이름
+    @Column(nullable = false)
+    private String lastName; // 성
     @Id
     private Long memberId; // 학번
-    @Column
+    @Column(nullable = false)
     private String memberMajor; // 학과
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String memberEmail; // 이메일
     @Column(nullable = false)
     private String memberPassword; // 비밀번호
 
     public static MemberEntity toMemberEntity(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
-        memberEntity.setMemberName(memberDTO.getMemberName());
+        memberEntity.setFirstName(memberDTO.getFirstName());
+        memberEntity.setLastName(memberDTO.getLastName());
         memberEntity.setMemberId(memberDTO.getMemberId());
         memberEntity.setMemberMajor(memberDTO.getMemberMajor());
         memberEntity.setMemberEmail(memberDTO.getMemberEmail());
