@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Data
 public class MemberDTO {
@@ -43,5 +44,18 @@ public class MemberDTO {
         memberDTO.setMemberEmail(memberEntity.getMemberEmail());
         memberDTO.setMemberPassword(memberEntity.getMemberPassword());
         return memberDTO;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MemberDTO memberDTO = (MemberDTO) o;
+        return memberPassword.equals(memberDTO.memberPassword) && memberConfirmPassword.equals(memberDTO.memberConfirmPassword);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(memberPassword, memberConfirmPassword);
     }
 }

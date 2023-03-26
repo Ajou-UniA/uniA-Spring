@@ -33,7 +33,7 @@ public class MemberController {
     @PostMapping("/create")
     public ResponseEntity create(@Valid @RequestBody MemberDTO memberDTO, BindingResult bindingResult){
 
-        if (memberDTO.getMemberPassword() != memberDTO.getMemberConfirmPassword()){
+        if (!(memberDTO.getMemberPassword().equals(memberDTO.getMemberConfirmPassword()))){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Passwords do not match");
         }
 
