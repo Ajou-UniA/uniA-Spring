@@ -3,26 +3,27 @@ package com.example.member.dto;
 import com.example.member.entity.MemberEntity;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Data
 public class MemberDTO {
 
-    @NotEmpty(message = "이름은 필수값입니다.")
+    @NotBlank(message = "Please enter your name")
     private String memberName; // 이름
-    @Size(min = 9, message = "학번을 다시 확인해 주세요.")
+
+    @NotNull(message = "Please enter your student ID")
     private Long memberId; // 학번
 
+    @NotBlank(message = "Please enter your major")
     private String memberMajor; // 학과
 
-    @Email
+    @NotBlank(message = "Please enter your email")
+    @Pattern(regexp = "[a-zA-Z0-9._%+-]+@ajou.ac.kr$", message = "Email format is incorrect")
     private String memberEmail; // 이메일
 
-    @Size(min = 9, message = "비밀번호는 최소 9글자 이상이여야 합니다.")
+    @NotBlank(message = "Please enter password")
+    @Size(min = 8, max = 12, message = "Password must be between 8 and 12 characters")
     private String memberPassword; // 비밀번호
-
     public static MemberDTO toMemberDTO(MemberEntity memberEntity){
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setMemberName(memberEntity.getMemberName());
