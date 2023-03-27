@@ -35,23 +35,6 @@ public class MemberService implements UserDetailsService {
 
     }
 
-//    public MemberDTO login(String userEmail,String passWord) {
-//
-//
-//        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(userEmail);
-//        //isPresent() bool함수로 구현
-//        if (byMemberEmail.isPresent()){
-//            MemberEntity memberEntity = byMemberEmail.get();
-//            if (memberEntity.getMemberPassword().equals(passWord)){
-//                MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
-//                return dto;
-//            } else{
-//                return null;
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
 
     public List<MemberDTO> findAll() {
         List<MemberEntity> memberEntityList = memberRepository.findAll();
@@ -61,7 +44,9 @@ public class MemberService implements UserDetailsService {
         }
         return memberDTOList;
     }
-
+    public boolean checkEmailDuplicate(String memberEmail) {
+        return memberRepository.existsByMemberEmail(memberEmail);
+    }
     public MemberDTO findById(Long id) {
         Optional<MemberEntity> optionalMemberEntity = memberRepository.findById(id);
         if (optionalMemberEntity.isPresent()) {
@@ -112,11 +97,8 @@ public class MemberService implements UserDetailsService {
         MemberEntity member = findName.get();
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-//        if(("admin").equals(username)){
-//            authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-//        }else {
-//            authorities.add(new SimpleGrantedAuthority(Role.USER.getValue()));
-//        }
+
+        authorities.add(new SimpleGrantedAuthority(Role.USER.getValue()));
 
         return new User(member.getMemberEmail(), member.getMemberPassword() , authorities);
     }
