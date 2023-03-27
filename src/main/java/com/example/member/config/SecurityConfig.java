@@ -29,26 +29,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     //Request 가 들어오는 경우 권한 설정 & 로그인 & 로그아웃 처리
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests();
-        http.authorizeRequests()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/member/myinfo").hasRole("USER")
-                .antMatchers("/**").permitAll()
+        http.csrf().disable()//csrf기능 사용X
+                .authorizeRequests().antMatchers("/member/**").authenticated()//인증된 사용자만 넘어갈 수 있도록 구현
                 .and()
                 .formLogin()
                 .loginPage("/member/login")
-                .defaultSuccessUrl("/")
+                .loginProcessingUrl("/member/login")
+                .usernameParameter("loginId")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/member/login/success")
                 .permitAll()
                 .and()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
-                .logoutSuccessUrl("/member/index")
-                .invalidateHttpSession(true)
-                .and()
-                .exceptionHandling().accessDeniedPage("/");
+                .logoutSuccessUrl("/member/logout/success")
+                .invalidateHttpSession(true);
+        //쿠키값을 가지고 있으면 제한한 url에 접근할때 로그인창 없이 접할 수 있다.
+        http.rememberMe()
+                .key("remember")//토큰에 사용되는 키값
+                .rememberMeParameter("remember-login")//파라미터 이름
+                .tokenValiditySeconds(43200 * 30)//15일 설정
+                .userDetailsService(memberService);
     }
 
 
