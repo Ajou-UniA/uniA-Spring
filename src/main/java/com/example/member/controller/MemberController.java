@@ -115,11 +115,11 @@ public class MemberController {
     }
 
     /**
-     * 회원정보 변경 -> *******비밀번호만 변경하도록 수정해야함*******
+     * 비밀번호 변경
      * [PATCH] /member/{memberId}
      * @param memberId
      * @param memberDTO
-     * @return memberDTO
+     * @return ResponseEntity<MemberDTO>
      */
     @PatchMapping("/member/{memberId}")
     public ResponseEntity<MemberDTO> update(@PathVariable Long memberId, @RequestBody MemberDTO memberDTO) {
