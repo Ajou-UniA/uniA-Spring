@@ -26,7 +26,7 @@ public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
     @Transactional
-    public void save(MemberDTO memberDTO) {
+    public void create(MemberDTO memberDTO) {
         //시큐리티 비교에 암호화된 비밀번호가 필요하여 회원가입시 암호화하여 저장(보안+기능구현을 위함)
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         memberDTO.setMemberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()));
@@ -34,6 +34,7 @@ public class MemberService implements UserDetailsService {
         memberRepository.save(memberEntity);
 
     }
+
 
 
     public List<MemberDTO> findAll() {
@@ -56,23 +57,6 @@ public class MemberService implements UserDetailsService {
         }
     }
 
-    public MemberDTO findByMemberEmail(String memberEmail){
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(memberEmail);
-        if (optionalMemberEntity.isPresent()){
-            return MemberDTO.toMemberDTO(optionalMemberEntity.get());
-        } else {
-            return null;
-        }
-    }
-
-    public MemberDTO updateForm(String myEmail){
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(myEmail);
-        if (optionalMemberEntity.isPresent()){
-            return MemberDTO.toMemberDTO(optionalMemberEntity.get());
-        } else{
-            return null;
-        }
-    }
 
 
     public void update(MemberDTO memberDTO) {
@@ -84,12 +68,7 @@ public class MemberService implements UserDetailsService {
         memberRepository.deleteById(id);
     }
 
-    public void deleteByMemberEmail(String memberEmail){
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(memberEmail);
-        if (optionalMemberEntity.isPresent()){
-            memberRepository.deleteById(optionalMemberEntity.get().getMemberId());
-        }
-    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

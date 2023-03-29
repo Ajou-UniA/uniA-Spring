@@ -10,10 +10,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -28,23 +29,29 @@ public class MemberController {
      * @param bindingResult
      * @return memberDTO
      */
-    @PostMapping("/save")
-    public ResponseEntity save(/*@Valid*/ @ModelAttribute MemberDTO memberDTO, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            StringBuilder sb = new StringBuilder(); // String 객체보다 좋음
-            bindingResult.getAllErrors().forEach(objectError -> {
-                FieldError field = (FieldError) objectError;
-                String message = objectError.getDefaultMessage();
+    @PostMapping("/create")
+    public ResponseEntity create(@Valid @RequestBody MemberDTO memberDTO, BindingResult bindingResult){
 
-                sb.append("Error field : " + field.getField() + "\n");
-                sb.append("Error message : " + message+"\n");
-            });
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sb.toString());
+        if (!(memberDTO.getMemberPassword().equals(memberDTO.getMemberConfirmPassword()))){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Passwords do not match");
         }
 
-        memberService.save(memberDTO);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(memberDTO);
+        if (bindingResult.hasErrors()){
+            String errorMessage = bindingResult.getAllErrors().stream()
+                    .map(objectError -> {
+                        FieldError fieldError = (FieldError) objectError;
+                        return "Error field : " + fieldError.getField() + "\nError message : " + objectError.getDefaultMessage();
+                    })
+                    .collect(Collectors.joining("\n"));
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+        }
+
+        memberService.create(memberDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberDTO);
     }
+
     //test를 위한 컨트롤러
     @GetMapping("/member/logout/success")
     public ResponseEntity test1() {
@@ -60,19 +67,25 @@ public class MemberController {
         return new ResponseEntity(map, HttpStatus.OK);
     }
 
+
     /**
      * 이메일 중복 확인
-     * [GET] /member/save/{memberEmail}
+     * [GET] /member/email-check/{memberEmail}
      * @param memberEmail
-     * @return
+     * @return ResponseEntity
      */
-    @GetMapping("/save/{memberEmail}")
+    @GetMapping("/email-check/{memberEmail}")
     public ResponseEntity checkEmailDuplicate(@PathVariable String memberEmail){
 
-        if(memberService.checkEmailDuplicate(memberEmail) == true){
-            return new ResponseEntity<>("The email already exists", HttpStatus.BAD_REQUEST);
+        if (memberEmail == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please enter your email");
         }
-        return new ResponseEntity<>("Good", HttpStatus.OK);
+
+        if(memberService.checkEmailDuplicate(memberEmail)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The email already exists");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("The email is available");
     }
 
     /**
@@ -93,8 +106,11 @@ public class MemberController {
      * @return memberDTO
      */
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<MemberDTO> findByMemberId(@PathVariable Long memberId){
+    public ResponseEntity findByMemberId(@PathVariable Long memberId){
         MemberDTO memberDTO = memberService.findById(memberId);
+        if (memberDTO == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member does not exist");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(memberDTO);
     }
 
@@ -106,18 +122,33 @@ public class MemberController {
      * @return memberDTO
      */
     @PatchMapping("/member/{memberId}")
-    public ResponseEntity update(@PathVariable Long memberId, @ModelAttribute MemberDTO memberDTO){
-        memberService.update(memberDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(memberDTO);
+    public ResponseEntity<MemberDTO> update(@PathVariable Long memberId, @RequestBody MemberDTO memberDTO) {
+
+        String password = memberDTO.getMemberPassword();
+
+        if (password == null || password.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        MemberDTO existMember = memberService.findById(memberId);
+
+        if (existMember == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        existMember.setMemberPassword(password);
+        memberService.update(existMember);
+        return ResponseEntity.status(HttpStatus.OK).body(existMember);
+
     }
 
 
-    /**
-     * 회원 탈퇴
-     * [DELETE] /member/{memberId}
-     * @param memberId
-     * @return
-     */
+        /**
+         * 회원 탈퇴
+         * [DELETE] /member/{memberId}
+         * @param memberId
+         * @return
+         */
     @DeleteMapping("/member/{memberId}")
     public ResponseEntity deleteById(@PathVariable Long memberId){
         memberService.deleteById(memberId);
