@@ -143,12 +143,12 @@ public class MemberController {
     }
 
 
-        /**
-         * 회원 탈퇴
-         * [DELETE] /member/{memberId}
-         * @param memberId
-         * @return
-         */
+    /**
+     * 회원 탈퇴
+     * [DELETE] /member/{memberId}
+     * @param memberId
+     * @return
+     */
     @DeleteMapping("/member/{memberId}")
     public ResponseEntity deleteById(@PathVariable Long memberId){
         memberService.deleteById(memberId);
